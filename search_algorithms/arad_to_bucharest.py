@@ -1,7 +1,11 @@
+import sys
+
+
 class Vertice:
-    def __init__(self, city: str, distance: int) -> None:
+    """Graph with greed algorithm and heuristcs"""
+    def __init__(self, city: str, distance_to_objective: int) -> None:
         self.city = city
-        self.distance = distance
+        self.distance_to_objective = distance_to_objective
         self.visited = False
         self.neighbors = []
 
@@ -86,6 +90,35 @@ class Graph:
     bucharest.add_neighbor(Neighbor(giurgiu, 90))
 
 
+vectors = []
+
+
+class Greedy:
+    def __init__(self, target: Vertice) -> None:
+        self.target = target
+        self.found = False
+
+    def search(self, current: Vertice, i: int) -> None:
+        global vectors
+
+        print(f"Current: {current.city}")
+        vectors.append(current)
+        current.visited = True
+        if current.city == self.target.city:
+            self.found = True
+            return
+        for neighbors in current.neighbors:
+            if not neighbors.city.visited:
+                neighbors.city.visited = True
+        ordered = sorted(current.neighbors, key=lambda x: x.city.distance_to_objective)
+        if i <= len(ordered):
+            self.search(ordered[0].city, i+1)
+        return
+
+
 if __name__ == '__main__':
     graph: Graph = Graph()
     graph.arad.show_neighbor()
+    print("Greedy algorith:")
+    greedy: Greedy = Greedy(graph.bucharest)
+    greedy.search(graph.arad, 0)
